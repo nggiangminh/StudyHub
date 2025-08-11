@@ -4,15 +4,14 @@ import com.studybuddy.backend.entity.Subject;
 import com.studybuddy.backend.entity.User;
 import com.studybuddy.backend.repository.SubjectRepository;
 import com.studybuddy.backend.repository.UserRepository;
-import org.springframework.stereotype.Service;
-
+import com.studybuddy.backend.dto.UserRequestDTO;
+import com.studybuddy.backend.dto.UserResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-
-@Service
 public class UserService {
     private final UserRepository userRepository;
     private final SubjectRepository subjectRepository;
@@ -22,32 +21,57 @@ public class UserService {
         this.subjectRepository = subjectRepository;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll().stream().map(this::toUserResponseDTO).collect(Collectors.toList());
     }
 
-    public Optional<User> getUserById(UUID id) {
-        return userRepository.findById(id);
+    public Optional<UserResponseDTO> getUserById(UUID id) {
+        return userRepository.findById(id).map(this::toUserResponseDTO);
     }
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
+        User user = toUserEntity(userRequestDTO);
+        User saved = userRepository.save(user);
+        return toUserResponseDTO(saved);
     }
 
-    public void deleteUser(UUID id) {
-        userRepository.deleteById(id);
-    }
-
-    public Optional<User> addSubjectToUser(UUID userId, UUID subjectId) {
+    public Optional<UserResponseDTO> addSubjectToUser(UUID userId, UUID subjectId) {
         Optional<User> userOpt = userRepository.findById(userId);
         Optional<Subject> subjectOpt = subjectRepository.findById(subjectId);
 
         if (userOpt.isPresent() && subjectOpt.isPresent()) {
             User user = userOpt.get();
             user.getSubjects().add(subjectOpt.get());
-            return Optional.of(userRepository.save(user));
+            User saved = userRepository.save(user);
+            return Optional.of(toUserResponseDTO(saved));
         }
 
         return Optional.empty();
+    }
+
+    public void deleteUser(UUID id) {
+        userRepository.deleteById(id);
+    }
+
+    // Mapping methods
+    public UserResponseDTO toUserResponseDTO(User user) {
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setAvailableTime(user.getAvailableTime());
+        if (user.getSubjects() != null) {
+            dto.setSubjects(user.getSubjects().stream().map(s -> s.getName()).collect(Collectors.toSet()));
+        }
+        return dto;
+    }
+
+    public User toUserEntity(UserRequestDTO dto) {
+        User user = new User();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setAvailableTime(dto.getAvailableTime());
+        return user;
     }
 }

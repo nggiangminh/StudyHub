@@ -1,8 +1,9 @@
 package com.studybuddy.backend.controller;
 
 
-import com.studybuddy.backend.entity.User;
 import com.studybuddy.backend.service.UserService;
+import com.studybuddy.backend.dto.UserRequestDTO;
+import com.studybuddy.backend.dto.UserResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,20 +22,20 @@ public class UserController {
 
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable UUID id) {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public UserResponseDTO createUser(@RequestBody UserRequestDTO userRequestDTO) {
+        return userService.createUser(userRequestDTO);
     }
 
     @DeleteMapping("/{id}")
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/subjects/{subjectId}")
-    public ResponseEntity<User> addSubjectToUser(
+    public ResponseEntity<UserResponseDTO> addSubjectToUser(
             @PathVariable UUID userId,
             @PathVariable UUID subjectId) {
 
