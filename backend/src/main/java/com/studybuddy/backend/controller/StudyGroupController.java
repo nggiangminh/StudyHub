@@ -1,12 +1,12 @@
 package com.studybuddy.backend.controller;
 
-import com.studybuddy.backend.entity.StudyGroup;
+import com.studybuddy.backend.dto.StudyGroupRequestDTO;
+import com.studybuddy.backend.dto.StudyGroupResponseDTO;
 import com.studybuddy.backend.service.StudyGroupService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -20,18 +20,18 @@ public class StudyGroupController {
     }
 
     @GetMapping
-    public List<StudyGroup> getAllGroups(){
+    public List<StudyGroupResponseDTO> getAllGroups(){
         return studyGroupService.getAllGroups();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudyGroup> getGroupById(@PathVariable UUID id){
+    public ResponseEntity<StudyGroupResponseDTO> getGroupById(@PathVariable UUID id){
         return studyGroupService.getGroupById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public StudyGroup createGroup(@RequestBody StudyGroup group){
-        return studyGroupService.createGroup(group);
+    public StudyGroupResponseDTO createGroup(@RequestBody StudyGroupRequestDTO request){
+        return studyGroupService.createGroup(request);
     }
 
     @DeleteMapping("/{id}")

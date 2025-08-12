@@ -1,6 +1,7 @@
 package com.studybuddy.backend.controller;
 
-import com.studybuddy.backend.entity.Message;
+import com.studybuddy.backend.dto.MessageRequestDTO;
+import com.studybuddy.backend.dto.MessageResponseDTO;
 import com.studybuddy.backend.service.MessageService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +19,12 @@ public class MessageController {
     }
 
     @GetMapping("/group/{groupId}")
-    public List<Message> getMessageByGroupId(@PathVariable UUID groupId) {
+    public List<MessageResponseDTO> getMessageByGroupId(@PathVariable UUID groupId) {
         return messageService.getMessageByGroupId(groupId);
     }
 
     @PostMapping
-    public Message sendMessage(@RequestBody Message message) {
-        return messageService.sendMessage(message);
+    public MessageResponseDTO sendMessage(@RequestBody MessageRequestDTO request) {
+        return messageService.sendMessage(request);
     }
 }

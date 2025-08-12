@@ -1,14 +1,12 @@
 package com.studybuddy.backend.entity;
 
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.*;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 @Entity
 @Table(name = "users")
 @Data
@@ -33,14 +31,9 @@ public class User {
     )
     private Set<Subject> subjects = new HashSet<>();
 
-//    public Set<Subject> getSubjects() {
-//        return subjects;
-//    }
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<GroupMember> groupMemberships;
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<Message> messages;
-    
 }
